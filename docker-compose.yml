@@ -1,0 +1,56 @@
+version: "3.4"
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  op-reth:
+    image: anton-rs/op-reth:latest
+    container_name: op-reth
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    profiles:
+      - op-reth 
+    restart: unless-stopped
+    stop_grace_period: 3m
+    entrypoint: /scripts/op-reth.sh
+    env_file:
+      - .env
+    ports:
+      - ${PORT__OP_RETH_HTTP:-9993}:8545
+      - ${PORT__OP_GETH_WS:-9994}:8546
+    volumes:
+      - ./:/scripts
+      - shared:/shared
+      - op_reth:/reth
+    <<: *logging
+
+  op-node:
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:v1.1.0
+    container_name: op-node
+    profiles:
+      - op-node
+    restart: unless-stopped
+    stop_grace_period: 5m
+    entrypoint: /scripts/op-node.sh
+    env_file:
+      - .env
+    ports:
+      - 9200:9200
+      - ${PORT__OP_NODE_P2P:-9003}:9003/udp
+      - ${PORT__OP_NODE_P2P:-9003}:9003/tcp
+    volumes:
+      - ./:/scripts
+      - shared:/shared
+      - data:/data
+    <<: *logging
+
+volumes:
+  reth:
+  shared:
+  op_reth:
