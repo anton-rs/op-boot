@@ -1,0 +1,5 @@
+# Do not automatically add reviewers - CODEOWNERS handles this.
+addReviewers: false
+
+# Automatically set the pr author as the assignee
+addAssignees: author
