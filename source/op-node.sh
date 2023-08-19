@@ -21,7 +21,7 @@ export OP_NODE_RPC_PORT=9000
 export OP_NODE_SNAPSHOT_LOG=/tmp/op-node-snapshot-log
 export OP_NODE_VERIFIER_L1_CONFS=4
 
-./op-node \
+./node \
   --l1=${OP_NODE_L1_ETH_RPC:="http://0.0.0.0:8545"} \
   --l2=${OP_NODE_L2_ENGINE_RPC:="http://0.0.0.0:9551"} \
   --rollup.config=./rollup.json \
