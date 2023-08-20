@@ -3,3 +3,8 @@ optimism
 reth
 node
 .env
+jwt.hex
+*.txt
+opnode_discovery_db
+opnode_peerstore_db
+op_reth

@@ -1,7 +1,7 @@
 all: build-reth
 
 build-reth:
-	@if [ ! -d "op-reth" ]; then @echo "Cloning op-reth repository..." && @git clone https://github.com/anton-rs/op-reth.git; fi
+	@if [ ! -d "op-reth" ]; then echo "Cloning op-reth repository..." && git clone https://github.com/anton-rs/op-reth.git; fi
 	@echo "Building op-reth..."
 	@make -C op-reth install
 	@echo "Copying the reth binary..."

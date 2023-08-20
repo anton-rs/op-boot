@@ -1,6 +1,6 @@
 # Title: Makefile
-# Description: Targets to bootstrap a full optimism node from source.
 # License: MIT
+# Description: Targets to bootstrap a full optimism node from source.
 # Author: refcell <https://github.com/refcell>
 
 help:
@@ -13,9 +13,24 @@ build: ## build both op-node and op-reth
 	@echo "[INFO] Done."
 .PHONY: build
 
+clean: ## clean all generated files
+	@echo "[INFO] Cleaning all generated files..."
+	@rm -rf node
+	@rm -rf reth
+	@rm -rf jwt.hex
+	@rm -rf op-reth
+	@rm -rf optimism
+	@rm -rf opnode_p2p_priv.txt
+	@rm -rf opnode_peerstore_db
+	@echo "[INFO] Done."
+
 ################################################################
 # op-node
 ################################################################
+
+generate-jwt: ## generate a random jwt token and save it to jwt.hex
+	@if [[ ! -f jwt.hex ]]; then echo "[INFO] Missing hex jwt, generating..." && openssl rand -hex 32; fi
+.PHONY: generate-jwt
 
 # [INTERNAL TARGET]
 op-node-bin-non-exist:
@@ -41,7 +56,8 @@ force-op-node: ## force build op-node from source, overwriting any existing bina
 .PHONY: force-op-node
 
 exec-op-node: ## execute op-node
-	@if [[ ! -f node ]]; then echo "[WARN] Missing op-node executable, building from source..." && make build-op-reth; fi
+	@make generate-jwt
+	@if [[ ! -f node ]]; then echo "[WARN] Missing op-node executable, building from source..." && make build-op-node; fi
 	@echo "[INFO] Executing op-node..."
 	@./op-node.sh
 	@echo "[INFO] Done."
@@ -54,9 +70,9 @@ exec-op-node: ## execute op-node
 # [INTERNAL TARGET]
 op-reth-bin-non-exist:
 	@if [[ -d "op-reth" ]]; then echo "[INFO] Updating op-reth..." && cd op-reth && git pull && cd ..; fi
-	@if [[ ! -d "op-reth" ]]; then echo "[INFO] Cloning op-reth repository..." && git clone https://github.com/anton-rs/op-reth.git; fi
+	@if [[ ! -d "op-reth" ]]; then echo "[INFO] Cloning op-reth repository..." && git clone https://github.com/anton-rs/op-reth.git && cd op-reth && git checkout clabby/op-reth && cd ..; fi
 	@echo "[INFO] Building op-reth..."
-	@make -C op-reth install
+	@FEATURES=optimism make -C op-reth install
 	@echo "[INFO] Copying the reth binary..."
 	@cp -f ./op-reth/target/release/reth ./reth
 	@echo "[INFO] Done."

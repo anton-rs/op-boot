@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -eou
 
 ./reth node \
   --datadir ${OP_RETH__DATADIR:="op_reth"} \
@@ -14,7 +13,7 @@ set -eou
   --ws.api ${OP_RETH__WS_API:="admin,debug,eth,net,trace,txpool,web3,rpc"} \
   --authrpc.addr ${OP_RETH__AUTHRPC_ADDR:="0.0.0.0"} \
   --authrpc.port ${OP_RETH__AUTHRPC_PORT:=9551} \
-  --authrpc.jwtsecret ${OP_RETH__AUTHRPC_JWT_SECRET:="/shared/jwt.txt"} \
+  --authrpc.jwtsecret ${OP_RETH__AUTHRPC_JWT_SECRET:="jwt.txt"} \
   --port ${OP_RETH__PORT:=30304} \
   --discovery.port ${OP_RETH__DISCOVERY_PORT:=30304} \
   --rollup.sequencer-http ${OP_RETH__ROLLUP_SEQUENCER_HTTP:="https://goerli-sequencer.base.org"} \
