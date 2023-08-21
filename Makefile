@@ -24,8 +24,31 @@ source: ## boots the node from source
 	@echo "[INFO] Done."
 .PHONY: source
 
+clean:
+	@echo "[INFO] Cleaning all generated files..."
+	@make -C docker clean
+	@make -C source clean
+	@echo "[INFO] Done."
+.PHONY: clean
 
-# op-node:
-# 	# Pull the latest op-node docker image
-# 	docker pull us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node
-#
+################################################################
+# source installs
+################################################################
+
+magi: ## executes magi from source
+	@echo "[INFO] Building magi..."
+	@make -C source exec-magi
+	@echo "[INFO] Done."
+.PHONY: magi
+
+op-node: ## executes an op-node from source
+	@echo "[INFO] Executing op-node..."
+	@make -C source exec-op-node
+	@echo "[INFO] Done."
+.PHONY: op-node
+
+op-reth: ## executes an op-reth from source
+	@echo "[INFO] Executing op-reth..."
+	@make -C source exec-op-reth
+	@echo "[INFO] Done."
+.PHONY: op-reth

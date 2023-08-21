@@ -15,22 +15,70 @@ build: ## build both op-node and op-reth
 
 clean: ## clean all generated files
 	@echo "[INFO] Cleaning all generated files..."
-	@rm -rf node
-	@rm -rf reth
 	@rm -rf jwt.hex
-	@rm -rf op-reth
-	@rm -rf optimism
-	@rm -rf opnode_p2p_priv.txt
-	@rm -rf opnode_peerstore_db
+	@make clean-magi
+	@make clean-op-node
+	@make clean-op-reth
 	@echo "[INFO] Done."
+
+generate-jwt: ## generate a random jwt token and save it to jwt.hex
+	@if [[ ! -f jwt.hex ]]; then echo "[INFO] Missing hex jwt, generating..." && openssl rand -hex 32; fi
+.PHONY: generate-jwt
+
+################################################################
+# magi
+################################################################
+
+clean-magi: ## clean magi generated files
+	@echo "[INFO] Cleaning magi generated files..."
+	@rm -rf magi
+	@rm -rf op-magi
+	@echo "[INFO] Done."
+.PHONY: clean-magi
+
+# [INTERNAL TARGET]
+magi-bin-non-exist:
+	@if [[ -d "magi" ]]; then echo "[INFO] Updating magi..." && cd magi && git pull && cd ..; fi
+	@if [[ ! -d "magi" ]]; then echo "[INFO] Cloning magi repository..." && git clone https://github.com/a16z/magi.git; fi
+	@echo "[INFO] Building magi..."
+	@cd magi && cargo build --release && cd ..
+	@echo "[INFO] Copying the magi binary..."
+	@cp -f ./magi/target/release/magi ./op-magi
+	@echo "[INFO] Done."
+.PHONY: magi-bin-non-exist
+
+build-magi: ## build magi from source
+	@if [[ -f magi ]]; then echo "[WARN] magi binary already installed." && exit 0; fi
+	@if [[ ! -f magi ]]; then make magi-bin-non-exist; fi
+.PHONY: build-magi
+
+force-magi: ## force build magi from source, overwriting any existing binary
+	@echo "[INFO] Forcing magi build..."
+	@rm -f ./magi
+	@make build-magi
+	@echo "[INFO] Done."
+.PHONY: force-magi
+
+exec-magi: ## execute magi
+	@make generate-jwt
+	@if [[ ! -f magi ]]; then echo "[WARN] Missing magi executable, building from source..." && make build-magi; fi
+	@echo "[INFO] Executing magi..."
+	@./magi.sh
+	@echo "[INFO] Done."
+.PHONY: exec-magi
 
 ################################################################
 # op-node
 ################################################################
 
-generate-jwt: ## generate a random jwt token and save it to jwt.hex
-	@if [[ ! -f jwt.hex ]]; then echo "[INFO] Missing hex jwt, generating..." && openssl rand -hex 32; fi
-.PHONY: generate-jwt
+clean-op-node: ## clean op-node generated files
+	@echo "[INFO] Cleaning op-node generated files..."
+	@rm -rf node
+	@rm -rf optimism
+	@rm -rf opnode_p2p_priv.txt
+	@rm -rf opnode_peerstore_db
+	@echo "[INFO] Done."
+.PHONY: clean-op-node
 
 # [INTERNAL TARGET]
 op-node-bin-non-exist:
@@ -66,6 +114,14 @@ exec-op-node: ## execute op-node
 ################################################################
 # op-reth
 ################################################################
+
+clean-op-reth: ## clean op-reth generated files
+	@echo "[INFO] Cleaning op-reth generated files..."
+	@rm -rf reth
+	@rm -rf op_reth
+	@rm -rf op-reth
+	@echo "[INFO] Done."
+.PHONY: clean-op-reth
 
 # [INTERNAL TARGET]
 op-reth-bin-non-exist:

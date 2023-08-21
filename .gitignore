@@ -1,1 +1,19 @@
-.env
+# secrets
+**/.env
+**/jwt.hex
+**/*.txt
+
+# magi related files
+**/magi
+**/op-magi
+
+# op-reth related files
+**/reth
+**/op-reth
+**/op_reth
+
+# op-node related files
+**/node
+**/optimism
+**/opnode_discovery_db
+**/opnode_peerstore_db

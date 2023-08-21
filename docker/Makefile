@@ -15,3 +15,9 @@ docker-compose:
 	@echo "Done."
 .PHONY: docker-compose
 
+clean:
+	@echo "Cleaning all generated files..."
+	@rm -rf ./op-reth
+	@rm -rf ./reth
+	@echo "Done."
+.PHONY: clean
