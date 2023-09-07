@@ -28,6 +28,7 @@ clean:
 	@echo "[INFO] Cleaning all generated files..."
 	@make -C docker clean
 	@make -C source clean
+	@rm -rf jwt.txt
 	@echo "[INFO] Done."
 .PHONY: clean
 
@@ -43,6 +44,7 @@ magi: ## executes magi from source
 
 op-node: ## executes an op-node from source
 	@echo "[INFO] Executing op-node..."
+	@if [[ -x "$(command -v gvm)" ]]; then gvm use go1.20.7 --default; fi
 	@make -C source exec-op-node
 	@echo "[INFO] Done."
 .PHONY: op-node

@@ -2,7 +2,7 @@
 
 ./reth node \
   --datadir ${OP_RETH__DATADIR:="op_reth"} \
-  --chain ${OP_RETH__NETWORK_NAME:="base_goerli"} \
+  --chain ${OP_RETH__NETWORK_NAME:="base-goerli"} \
   --http \
   --http.addr ${OP_RETH__HTTP_ADDR:="0.0.0.0"} \
   --http.port ${OP_RETH__HTTP_PORT:=9545} \
@@ -17,4 +17,4 @@
   --port ${OP_RETH__PORT:=30304} \
   --discovery.port ${OP_RETH__DISCOVERY_PORT:=30304} \
   --rollup.sequencer-http ${OP_RETH__ROLLUP_SEQUENCER_HTTP:="https://goerli-sequencer.base.org"} \
-  -vvv
+  -vvvvv

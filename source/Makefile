@@ -15,6 +15,7 @@ build: ## build both op-node and op-reth
 
 clean: ## clean all generated files
 	@echo "[INFO] Cleaning all generated files..."
+	@rm -rf jwt.txt
 	@rm -rf jwt.hex
 	@make clean-magi
 	@make clean-op-node
@@ -22,7 +23,7 @@ clean: ## clean all generated files
 	@echo "[INFO] Done."
 
 generate-jwt: ## generate a random jwt token and save it to jwt.hex
-	@if [[ ! -f jwt.hex ]]; then echo "[INFO] Missing hex jwt, generating..." && openssl rand -hex 32; fi
+	@if [[ ! -f jwt.txt ]]; then echo "[INFO] Missing hex jwt, generating..." && openssl rand -hex 32 > jwt.txt; fi
 .PHONY: generate-jwt
 
 ################################################################
@@ -48,8 +49,8 @@ magi-bin-non-exist:
 .PHONY: magi-bin-non-exist
 
 build-magi: ## build magi from source
-	@if [[ -f magi ]]; then echo "[WARN] magi binary already installed." && exit 0; fi
-	@if [[ ! -f magi ]]; then make magi-bin-non-exist; fi
+	@if [[ -f op-magi ]]; then echo "[WARN] magi binary already installed." && exit 0; fi
+	@if [[ ! -f op-magi ]]; then make magi-bin-non-exist; fi
 .PHONY: build-magi
 
 force-magi: ## force build magi from source, overwriting any existing binary
@@ -77,6 +78,7 @@ clean-op-node: ## clean op-node generated files
 	@rm -rf optimism
 	@rm -rf opnode_p2p_priv.txt
 	@rm -rf opnode_peerstore_db
+	@rm -rf opnode_discovery_db
 	@echo "[INFO] Done."
 .PHONY: clean-op-node
 
@@ -128,7 +130,7 @@ op-reth-bin-non-exist:
 	@if [[ -d "op-reth" ]]; then echo "[INFO] Updating op-reth..." && cd op-reth && git pull && cd ..; fi
 	@if [[ ! -d "op-reth" ]]; then echo "[INFO] Cloning op-reth repository..." && git clone https://github.com/anton-rs/op-reth.git && cd op-reth && git checkout clabby/op-reth && cd ..; fi
 	@echo "[INFO] Building op-reth..."
-	@FEATURES=optimism make -C op-reth install
+	@cd op-reth && cargo install --path bin/reth --bin reth --force --locked --features optimism --profile release && cd ..
 	@echo "[INFO] Copying the reth binary..."
 	@cp -f ./op-reth/target/release/reth ./reth
 	@echo "[INFO] Done."
@@ -147,6 +149,7 @@ build-op-reth: ## build op-reth from source
 .PHONY: build-op-reth
 
 exec-op-reth: ## execute op-reth
+	@make generate-jwt
 	@if [[ ! -f reth ]]; then echo "[WARN] Missing op-reth executable, building from source..." && make build-op-reth; fi
 	@echo "[INFO] Executing op-reth..."
 	@./op-reth.sh
